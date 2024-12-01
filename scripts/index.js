@@ -10,7 +10,7 @@ function prepareCards() {
     const cardTemplate = getTemplate();
 
     initialCards.forEach((x) => {
-        const cardElement = createCard(x.name, x.link);
+        const cardElement = createCard(x.name, x.link, deleteCard);
         container.append(cardElement);
     });
 };
@@ -18,7 +18,7 @@ function prepareCards() {
 prepareCards();
 
 //Создаем карточки
-function createCard(name, link, deleteCard) {
+function createCard(name, link) {
     const template = getTemplate();
 
     //Клонируем шаблон карточки
@@ -34,10 +34,11 @@ function createCard(name, link, deleteCard) {
 
     //Обработчикк клика по иконке удаления с колбеком
     const deleteButton = clone.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', function() {
-        const listItem = deleteButton.closest('.card');
-        listItem.remove();
-    });
+    deleteButton.addEventListener('click', deleteCard);
 
     return clone;
+};
+
+function deleteCard(evt) {
+    evt.target.closest('.card').remove();
 };
