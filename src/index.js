@@ -61,16 +61,18 @@ const editProfileBtn = document.querySelector('.profile__edit-button');
 const editProfilePopup = document.querySelector('.popup_type_edit');
 
 
-const closeBtn = document.querySelector('.popup__close');
+const closeBtn = document.querySelectorAll('.popup__close');
+
+closeBtn.forEach(button => {
+    button.addEventListener('click', () => {
+        const popup = button.closest('.popup');
+        closePopup(popup);
+    });
+});
 
 //Обработчик клика по кнопке с карандашом
 editProfileBtn.addEventListener('click', () => {
     openPopup(editProfilePopup);
-});
-
-//Обработчик клика по крестику для закрытия модалки
-closeBtn.addEventListener('click', () => {
-    closePopup(editProfilePopup);
 });
 
 //Закрытие попапа по клику на оверлей, нашли оверлей
@@ -108,15 +110,19 @@ jobInput.value = document.querySelector('.profile__description').textContent;
 //Отправка формы и закрытие попапа
 function handleFormSubmit(evt) {
     evt.preventDefault(evt);
+
 //Получили значения полей
     const nameValue = nameInput.value;
     const jobValue = jobInput.value;
+
 //Куда будем подставлять значения
     const nameElement = document.querySelector('.profile__title');
     const jobElement = document.querySelector('.profile__description');
+
 //Вставили новые значения
     nameElement.textContent = nameValue;
     jobElement.textContent = jobValue;
+
 //Закрыли попап
     closePopup(editProfilePopup);
 };
@@ -130,3 +136,23 @@ const newPlaceBtn = document.querySelector('.profile__add-button');
 newPlaceBtn.addEventListener('click', () => {
     openPopup(newPlaceForm);
 });
+
+const cardContainer = document.getElementById('card-container');
+
+function addCard(cardName, cardLink) {
+    const card = document.createElement('li');
+    card.classList.add('places__item', 'card');
+
+    const placeName = document.createElement('h2');
+    placeName.textContent = cardName;
+    card.appendChild(placeName);
+
+    const imgPlace = document.createElement('img');
+    imgPlace.src = cardLink;
+    imgPlace.alt = cardName;
+    card.appendChild(imgPlace);
+
+    document.querySelector('.places__list').appendChild(card);
+};
+
+newPlaceForm.addEventListener('submit', addCard);
