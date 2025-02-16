@@ -1,68 +1,28 @@
 import './pages/index.css';
-import { initialCards } from './scripts/cards.js';
+import { prepareCards, addCard } from './components/card.js';
+import { openPopup, closePopup, handleOverlayClick, handleFormSubmit } from './components/modal.js';
 
-const container = document.getElementById('card-container');
+export const container = document.getElementById('card-container');
 
-//Темплейт карточки
-function getTemplate() {
-    return document.getElementById('card-template');
-};
+// Получаем попап с картинкой
+export const cardImagePopup = document.querySelector('.popup_type_image');
 
-//Выводим карточки
-function prepareCards() {
-    initialCards.forEach((x) => {
-        const cardElement = createCard(x.name, x.link, deleteCard);
-        container.append(cardElement);
-    });
-};
+// Находим поля картинки
+export const imageSrc = cardImagePopup.querySelector('.popup__image');
+export const imageTitle = cardImagePopup.querySelector('.popup__caption');
+
+//Закрытие попапа по клику на оверлей, нашли оверлей
+export const popups = document.querySelectorAll('.popup');
 
 prepareCards();
 
-//Создаем карточки
-function createCard(name, link) {
-    const template = getTemplate();
-
-    //Клонируем шаблон карточки
-    const clone = template.content.cloneNode(true);
-
-    //Устанавливаем значение вложенных элементов
-    const image = clone.querySelector('.card__image');
-    image.src = link;
-    image.alt = name;
-
-    const titleElement = clone.querySelector('.card__title');
-    titleElement.textContent = name;
-
-    //Обработчикк клика по иконке удаления с колбеком
-    const deleteButton = clone.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', deleteCard);
-
-    return clone;
-};
-
-function deleteCard(evt) {
-    evt.target.closest('.card').remove();
-};
-
-//Функция открытия попапа
-function openPopup(popup) {
-    popup.classList.add('popup_is-opened');
-    popup.classList.remove('popup_is-animated');
-    document.addEventListener('keydown', closeByEscape);
-};
-
-//Функция закрытия попапа
-function closePopup(popup) {
-    popup.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown', closeByEscape);
-};
-
 const editProfileBtn = document.querySelector('.profile__edit-button');
-const editProfilePopup = document.querySelector('.popup_type_edit');
+export const editProfilePopup = document.querySelector('.popup_type_edit');
 
 
 const closeBtn = document.querySelectorAll('.popup__close');
 
+//Обработчик клика по крестику
 closeBtn.forEach(button => {
     button.addEventListener('click', () => {
         const popup = button.closest('.popup');
@@ -75,61 +35,25 @@ editProfileBtn.addEventListener('click', () => {
     openPopup(editProfilePopup);
 });
 
-//Закрытие попапа по клику на оверлей, нашли оверлей
-const popups = document.querySelectorAll('.popup');
-
 //поставили счетчик клика 
 popups.forEach(popup => {
     popup.addEventListener('click', handleOverlayClick);
 });
 
-function handleOverlayClick(e) {
-    if (e.target.classList.contains('popup')) {
-        e.currentTarget.classList.remove('popup_is-opened');
-    };
-};
-
-function closeByEscape(evt) {
-    if (evt.key === 'Escape') {
-        const openedPopup = document.querySelector('.popup_is-opened');
-        closePopup(openedPopup);
-    };
-};
-
 //Форма редактирования профиля
 const formElement = document.querySelector('.popup__form');
 
 // Находим поля формы в DOM
-const nameInput = formElement.querySelector('.popup__input_type_name');
-const jobInput = formElement.querySelector('.popup__input_type_description');
+export const nameInput = formElement.querySelector('.popup__input_type_name');
+export const jobInput = formElement.querySelector('.popup__input_type_description');
 
 //Передаем в поля уже имеющуюся информацию
 nameInput.value = document.querySelector('.profile__title').textContent;
 jobInput.value = document.querySelector('.profile__description').textContent;
 
-//Отправка формы и закрытие попапа
-function handleFormSubmit(evt) {
-    evt.preventDefault(evt);
-
-//Получили значения полей
-    const nameValue = nameInput.value;
-    const jobValue = jobInput.value;
-
-//Куда будем подставлять значения
-    const nameElement = document.querySelector('.profile__title');
-    const jobElement = document.querySelector('.profile__description');
-
-//Вставили новые значения
-    nameElement.textContent = nameValue;
-    jobElement.textContent = jobValue;
-
-//Закрыли попап
-    closePopup(editProfilePopup);
-};
-
 formElement.addEventListener('submit', handleFormSubmit);
 
-const newPlaceForm = document.querySelector('.popup_type_new-card');
+export const newPlaceForm = document.querySelector('.popup_type_new-card');
 const newPlaceBtn = document.querySelector('.profile__add-button');
 
 //Открываем форму Новое место
@@ -137,22 +61,11 @@ newPlaceBtn.addEventListener('click', () => {
     openPopup(newPlaceForm);
 });
 
-const cardContainer = document.getElementById('card-container');
-
-function addCard(cardName, cardLink) {
-    const card = document.createElement('li');
-    card.classList.add('places__item', 'card');
-
-    const placeName = document.createElement('h2');
-    placeName.textContent = cardName;
-    card.appendChild(placeName);
-
-    const imgPlace = document.createElement('img');
-    imgPlace.src = cardLink;
-    imgPlace.alt = cardName;
-    card.appendChild(imgPlace);
-
-    document.querySelector('.places__list').appendChild(card);
-};
+export const cardNameInput = newPlaceForm.querySelector('.popup__input_type_card-name');
+export const cardImgUrlInput = newPlaceForm.querySelector('.popup__input_type_url');
 
 newPlaceForm.addEventListener('submit', addCard);
+
+//Дабовляем анимацию
+const allPopups = document.querySelectorAll('.popup');
+allPopups.forEach((element) => element.classList.add('popup_is-animated'));
