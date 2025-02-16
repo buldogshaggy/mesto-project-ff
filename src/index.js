@@ -1,6 +1,7 @@
 import './pages/index.css';
-import { prepareCards, addCard } from './components/card.js';
-import { openPopup, closePopup, handleOverlayClick, handleFormSubmit } from './components/modal.js';
+import { addCard, createCard, handleLike } from './components/card.js';
+import { openPopup, closePopup, handleOverlayClick } from './components/modal.js';
+import { initialCards } from './scripts/cards.js';
 
 export const container = document.getElementById('card-container');
 
@@ -14,13 +15,57 @@ export const imageTitle = cardImagePopup.querySelector('.popup__caption');
 //Закрытие попапа по клику на оверлей, нашли оверлей
 export const popups = document.querySelectorAll('.popup');
 
-prepareCards();
-
 const editProfileBtn = document.querySelector('.profile__edit-button');
 export const editProfilePopup = document.querySelector('.popup_type_edit');
 
-
 const closeBtn = document.querySelectorAll('.popup__close');
+
+//Форма редактирования профиля
+const formElement = document.querySelector('.popup__form');
+
+// Находим поля формы в DOM
+export const nameInput = formElement.querySelector('.popup__input_type_name');
+export const jobInput = formElement.querySelector('.popup__input_type_description');
+
+export const newPlaceForm = document.querySelector('.popup_type_new-card');
+const newPlaceBtn = document.querySelector('.profile__add-button');
+
+export const cardNameInput = newPlaceForm.querySelector('.popup__input_type_card-name');
+export const cardImgUrlInput = newPlaceForm.querySelector('.popup__input_type_url');
+
+//Куда будем подставлять значения
+const nameElement = document.querySelector('.profile__title');
+const jobElement = document.querySelector('.profile__description');
+
+//Выводим карточки
+function prepareCards() {
+    initialCards.forEach((x) => {
+        const cardElement = createCard(x.name, x.link, handleLike, handleOpenImg);
+        container.append(cardElement);
+    });
+};
+
+export function handleOpenImg(event) {
+    imageSrc.src = event.target.src
+    imageTitle.textContent = event.target.alt
+    openPopup(cardImagePopup)
+};
+
+//Отправка формы и закрытие попапа
+function handleProfileFormSubmit(evt) {
+    evt.preventDefault(evt);
+
+//Получили значения полей
+    const nameValue = nameInput.value;
+    const jobValue = jobInput.value;
+
+//Вставили новые значения
+    nameElement.textContent = nameValue;
+    jobElement.textContent = jobValue;
+
+//Закрыли попап
+    closePopup(editProfilePopup);
+};
 
 //Обработчик клика по крестику
 closeBtn.forEach(button => {
@@ -40,32 +85,20 @@ popups.forEach(popup => {
     popup.addEventListener('click', handleOverlayClick);
 });
 
-//Форма редактирования профиля
-const formElement = document.querySelector('.popup__form');
-
-// Находим поля формы в DOM
-export const nameInput = formElement.querySelector('.popup__input_type_name');
-export const jobInput = formElement.querySelector('.popup__input_type_description');
-
-//Передаем в поля уже имеющуюся информацию
-nameInput.value = document.querySelector('.profile__title').textContent;
-jobInput.value = document.querySelector('.profile__description').textContent;
-
-formElement.addEventListener('submit', handleFormSubmit);
-
-export const newPlaceForm = document.querySelector('.popup_type_new-card');
-const newPlaceBtn = document.querySelector('.profile__add-button');
+formElement.addEventListener('submit', handleProfileFormSubmit);
 
 //Открываем форму Новое место
 newPlaceBtn.addEventListener('click', () => {
     openPopup(newPlaceForm);
 });
 
-export const cardNameInput = newPlaceForm.querySelector('.popup__input_type_card-name');
-export const cardImgUrlInput = newPlaceForm.querySelector('.popup__input_type_url');
-
 newPlaceForm.addEventListener('submit', addCard);
 
 //Дабовляем анимацию
-const allPopups = document.querySelectorAll('.popup');
-allPopups.forEach((element) => element.classList.add('popup_is-animated'));
+popups.forEach((element) => element.classList.add('popup_is-animated'));
+
+//Передаем в поля уже имеющуюся информацию
+nameInput.value = document.querySelector('.profile__title').textContent;
+jobInput.value = document.querySelector('.profile__description').textContent;
+
+prepareCards();

@@ -1,18 +1,9 @@
-import { initialCards } from '../scripts/cards.js';
-import { container, cardNameInput, cardImgUrlInput, newPlaceForm } from '../index.js';
-import { handleOpenImg, closePopup } from './modal.js';
+import { container, cardNameInput, cardImgUrlInput, newPlaceForm, handleOpenImg } from '../index.js';
+import { closePopup } from './modal.js';
 
 //Темплейт карточки
 function getTemplate() {
     return document.getElementById('card-template');
-};
-
-//Выводим карточки
-export function prepareCards() {
-    initialCards.forEach((x) => {
-        const cardElement = createCard(x.name, x.link, handleLike, handleOpenImg);
-        container.append(cardElement);
-    });
 };
 
 //Создаем карточки
@@ -35,12 +26,11 @@ export function createCard(name, link, likeHandler, openImgHandler) {
     deleteButton.addEventListener('click', deleteCard);
 
     //Обработчикк клика по иконке лайка с колбеком
-    const likeButton = clone.querySelectorAll('.card__like-button');
-    likeButton[0].addEventListener('click', likeHandler);
+    const likeButton = clone.querySelector('.card__like-button');
+    likeButton.addEventListener('click', likeHandler);
 
     //Обработчикк клика по иконке лайка с колбеком
-    const cardImg = clone.querySelector('.card__image');
-    cardImg.addEventListener('click', openImgHandler);
+    image.addEventListener('click', openImgHandler);
 
     return clone;
 };
