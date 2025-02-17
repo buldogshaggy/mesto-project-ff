@@ -1,5 +1,5 @@
 import './pages/index.css';
-import { addCard, createCard, handleLike } from './components/card.js';
+import { createCard, handleLike } from './components/card.js';
 import { openPopup, closePopup, handleOverlayClick } from './components/modal.js';
 import { initialCards } from './scripts/cards.js';
 
@@ -98,7 +98,24 @@ newPlaceForm.addEventListener('submit', addCard);
 popups.forEach((element) => element.classList.add('popup_is-animated'));
 
 //Передаем в поля уже имеющуюся информацию
-nameInput.value = document.querySelector('.profile__title').textContent;
-jobInput.value = document.querySelector('.profile__description').textContent;
+nameInput.value = nameElement.textContent;
+jobInput.value = jobElement.textContent;
+
+function addCard(evt) {
+    evt.preventDefault(evt);
+
+    const newCardElement = createCard(
+        cardNameInput.value,
+        cardImgUrlInput.value,
+        handleLike,
+        handleOpenImg
+    );
+    container.prepend(newCardElement);
+
+    cardNameInput.value = '';
+    cardImgUrlInput.value = '';
+
+    closePopup(newPlaceForm);
+};
 
 prepareCards();

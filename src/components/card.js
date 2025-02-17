@@ -1,6 +1,3 @@
-import { container, cardNameInput, cardImgUrlInput, newPlaceForm, handleOpenImg } from '../index.js';
-import { closePopup } from './modal.js';
-
 //Темплейт карточки
 function getTemplate() {
     return document.getElementById('card-template');
@@ -43,21 +40,4 @@ function deleteCard(evt) {
 //Лайк карточки
 export function handleLike(event) {
     event.target.classList.toggle('card__like-button_is-active');
-};
-
-export function addCard(evt) {
-    evt.preventDefault(evt);
-
-    const newCardElement = createCard(
-        cardNameInput.value,
-        cardImgUrlInput.value,
-        handleLike,
-        handleOpenImg
-    );
-    container.prepend(newCardElement);
-
-    cardNameInput.value = '';
-    cardImgUrlInput.value = '';
-
-    closePopup(newPlaceForm);
 };
