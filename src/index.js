@@ -48,6 +48,7 @@ function prepareCards() {
 export function handleOpenImg(event) {
     imageSrc.src = event.target.src
     imageTitle.textContent = event.target.alt
+    imageSrc.alt = imageTitle.textContent;
     openPopup(cardImagePopup)
 };
 
