@@ -4,33 +4,33 @@ function getTemplate() {
 };
 
 //Создаем карточки
-export function createCard(name, link, likeHandler, openImgHandler) {
-    const template = getTemplate();
+// export function createCard(name, link, likeHandler, openImgHandler) {
+//     const template = getTemplate();
 
-    //Клонируем шаблон карточки
-    const clone = template.content.cloneNode(true);
+//     //Клонируем шаблон карточки
+//     const clone = template.content.cloneNode(true);
 
-    //Устанавливаем значение вложенных элементов
-    const image = clone.querySelector('.card__image');
-    image.src = link;
-    image.alt = name;
+//     //Устанавливаем значение вложенных элементов
+//     const image = clone.querySelector('.card__image');
+//     image.src = link;
+//     image.alt = name;
 
-    const titleElement = clone.querySelector('.card__title');
-    titleElement.textContent = name;
+//     const titleElement = clone.querySelector('.card__title');
+//     titleElement.textContent = name;
 
-    //Обработчикк клика по иконке удаления с колбеком
-    const deleteButton = clone.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', deleteCard);
+//     //Обработчикк клика по иконке удаления с колбеком
+//     const deleteButton = clone.querySelector('.card__delete-button');
+//     deleteButton.addEventListener('click', deleteCard);
 
-    //Обработчикк клика по иконке лайка с колбеком
-    const likeButton = clone.querySelector('.card__like-button');
-    likeButton.addEventListener('click', likeHandler);
+//     //Обработчикк клика по иконке лайка с колбеком
+//     const likeButton = clone.querySelector('.card__like-button');
+//     likeButton.addEventListener('click', likeHandler);
 
-    //Обработчикк клика по иконке лайка с колбеком
-    image.addEventListener('click', openImgHandler);
+//     //Обработчикк клика по иконке лайка с колбеком
+//     image.addEventListener('click', openImgHandler);
 
-    return clone;
-};
+//     return clone;
+// };
 
 //Удаление карточки
 function deleteCard(evt) {

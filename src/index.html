@@ -6,7 +6,6 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
-  <!-- <link rel="stylesheet" href="./pages/index.css"> -->
 </head>
 <body class="page">
 <div class="page__content">
@@ -37,9 +36,31 @@
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Редактировать профиль</h3>
-      <form class="popup__form" name="edit-profile">
-        <input type="text" name="name" class="popup__input popup__input_type_name" placeholder="Имя" required>
-        <input type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" required>
+      <form class="popup__form" name="edit-profile" novalidate>
+        <input 
+        id="name-input" 
+        type="text" 
+        name="name" 
+        class="popup__input popup__input_type_name" 
+        placeholder="Имя" 
+        minlength="2" 
+        maxlength="40" 
+        pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$" 
+        data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+        required>
+        <span class="name-input-error popup__error"></span>
+        <input 
+        id="description-input" 
+        type="text" 
+        name="description" 
+        class="popup__input popup__input_type_description" 
+        placeholder="Занятие" 
+        minlength="2" 
+        maxlength="200" 
+        pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$" 
+        data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+        required>
+        <span class="description-input-error popup__error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
@@ -49,8 +70,26 @@
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
       <form class="popup__form" name="new-place">
-        <input type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
-        <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <input 
+        id="new-place-name" 
+        type="text" 
+        name="place-name" 
+        class="popup__input popup__input_type_card-name" 
+        placeholder="Название" 
+        minlength="2" 
+        maxlength="30"
+        pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$" 
+        data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+        required>
+        <span class="new-place-name-error popup__error"></span>
+        <input 
+        id="new-place-link" 
+        type="url" 
+        name="link" 
+        class="popup__input popup__input_type_url" 
+        placeholder="Ссылка на картинку" 
+        required>
+        <span class="new-place-link-error popup__error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
@@ -63,8 +102,6 @@
     </div>
   </div>
 </div>
-<!-- <script src="./scripts/cards.js"></script>
-<script src="./scripts/index.js" defer></script> -->
 
 <template id="card-template">
   <li class="places__item card">
@@ -74,6 +111,7 @@
       <h2 class="card__title">
       </h2>
       <button type="button" class="card__like-button"></button>
+      <span class="card__like_count"></span>
     </div>
   </li>
 </template>
