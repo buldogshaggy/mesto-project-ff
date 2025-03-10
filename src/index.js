@@ -94,7 +94,7 @@ newPlaceBtn.addEventListener('click', () => {
     openPopup(newPlaceForm);
 });
 
-newPlaceForm.addEventListener('submit', addCard);
+// newPlaceForm.addEventListener('submit', addCard);
 
 //Дабовляем анимацию
 popups.forEach((element) => element.classList.add('popup_is-animated'));
@@ -103,23 +103,23 @@ popups.forEach((element) => element.classList.add('popup_is-animated'));
 nameInput.value = nameElement.textContent;
 jobInput.value = jobElement.textContent;
 
-function addCard(evt) {
-    evt.preventDefault(evt);
+// function addCard(evt) {
+//     evt.preventDefault(evt);
 
-    const newCardElement = createCard(
-        cardNameInput.value,
-        cardImgUrlInput.value,
-        handleLike,
-        handleOpenImg
-    );
-    container.prepend(newCardElement);
+//     const newCardElement = createCard(
+//         cardNameInput.value,
+//         cardImgUrlInput.value,
+//         handleLike,
+//         handleOpenImg
+//     );
+//     container.prepend(newCardElement);
 
-    cardNameInput.value = '';
-    cardImgUrlInput.value = '';
-    clearValidation(formElement, formValidationConfig);
+//     cardNameInput.value = '';
+//     cardImgUrlInput.value = '';
+//     clearValidation(formElement, formValidationConfig);
 
-    closePopup(newPlaceForm);
-};
+//     closePopup(newPlaceForm);
+// };
 
 // prepareCards();
 
@@ -228,7 +228,7 @@ const config = {
 
     headers: {
         authorization: '96c128e6-12dd-4ec5-ac75-627a0fa1164c',
-        'Content-Type': 'aplication/json'
+        'Content-Type': 'application/json'
     }
 };
 
@@ -309,8 +309,10 @@ function createCard(cardData, userId) {
 
     // Обработчик для удаления карточки
     deleteButton.addEventListener('click', () => {
-        // Здесь можно добавить запрос на удаление карточки
-        cardElement.remove();
+        deleteCard(cardData._id)
+            .then(() => {
+                cardElement.remove();
+            })
     });
 
     // Обработчик для лайка
@@ -352,8 +354,8 @@ function updateProfileData(name, about) {
         method: 'PATCH',
         headers: config.headers,
         body: JSON.stringify({
-            name: 'Marie Skłodowska Curie',
-            about: 'Physicist and Chemist'
+            name: name,
+            about: about
         })
     })
     .then((res) => {
@@ -390,3 +392,50 @@ function updateProfileOnPage(userData) {
     profileName.textContent = userData.name;
     profileDescription.textContent = userData.about;
 };
+
+function addCard(name, link) {
+    return fetch(`${config.baseUrl}/cards`, {
+        method: 'POST',
+        headers: config.headers,
+        body: JSON.stringify({
+            name: name,
+            link: link
+        })
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.ststus}`);
+    });
+};
+
+newPlaceForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const cardName = newPlaceForm.querySelector('.popup__input_type_card-name').value;
+    const cardLink = newPlaceForm.querySelector('.popup__input_type_url').value;
+
+    addCard(cardName, cardLink)
+        .then((cardData) => {
+            const cardElement = createCard(cardData);
+
+            const cardsContainer = document.querySelector('.places__list');
+            cardsContainer.append(cardElement);
+            closePopup(newPlaceForm);
+            // newPlaceForm.reset();
+        })
+        // .catch((error) => {
+        //     console.error('Ошибка при добавлении карточки:', error);
+        // });
+});
+
+function deleteCard(cardId) {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    })
+    .then(res => {
+        return res.json();
+    })
+}
