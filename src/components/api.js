@@ -16,9 +16,9 @@ export function loadUserProfile() {
     .then((res) => {
         return res.json();
     })
-    // .then((userData) => {
-    //     updateProfile(userData);
-    // })    
+    .catch((err) => {
+        console.log(err);
+      });   
 };
 
 export function loadCards() {
@@ -31,7 +31,10 @@ export function loadCards() {
             return res.json();
         }
         return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    })
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function updateProfileData(name, about) {
@@ -45,7 +48,10 @@ export function updateProfileData(name, about) {
     })
     .then((res) => {
         return res.json();
-    });
+    })
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function addCard(name, link) {
@@ -58,6 +64,9 @@ export function addCard(name, link) {
         })
     })
     .then(res => res.json())
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function deleteCard(cardId) {
@@ -68,6 +77,9 @@ export function deleteCard(cardId) {
     .then(res => {
         return res.json();
     })
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function removeLike(cardId) {
@@ -76,6 +88,9 @@ export function removeLike(cardId) {
     headers: config.headers
     })
     .then(res => res.json())
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function addLike(cardId) {
@@ -84,6 +99,9 @@ export function addLike(cardId) {
         headers: config.headers
     })
     .then(res => res.json())
+    .catch((err) => {
+        console.log(err);
+      });
 };
 
 export function updateAvatar(avatarUrl) {
@@ -94,5 +112,8 @@ export function updateAvatar(avatarUrl) {
         avatar: avatarUrl,
       })
     })
-    .then(res => res.json());
+    .then(res => res.json())
+    .catch((err) => {
+        console.log(err);
+      });
 };

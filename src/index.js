@@ -131,17 +131,20 @@ function clearValidation(formElement, formValidationConfig) {
 function updateProfile(userData) {
     const profileTitle = document.querySelector('.profile__title');
     const profileDescription = document.querySelector('.profile__description');
-    const profileImage = document.querySelector('.profile__image');
+    const profileImage = document.querySelector('.profile__image-avatar');
 
     if (profileTitle && profileDescription && profileImage) {
         profileTitle.textContent = userData.name;
         profileDescription.textContent = userData.about;
         profileImage.src = userData.avatar;
-        profileImage.alt = 'Фото профиля';
+        profileImage.alt = 'Аватар';
     }
 };
 
-loadUserProfile();
+loadUserProfile()
+    .then((userData) => {
+        updateProfile(userData);
+    })
 
 // Создание DOM-элемента карточки
 function createCard(cardData, userId) {
@@ -218,11 +221,10 @@ function renderCards(cards, containerSelector, userId) {
 document.addEventListener('DOMContentLoaded', () => {
     Promise.all([loadUserProfile(), loadCards()])
         .then(([userData, cards]) => {
-            console.log('Данные пользователя:', userData);
-            console.log('Карточки:', cards);
 
             // Отображаем карточки, передавая _id пользователя
-            renderCards(cards, '.places__list', userData._id); // Замените '.cards__list' на ваш селектор
+            renderCards(cards, '.places__list', userData._id);
+
         })
         .catch((err) => {
             console.error('Ошибка при загрузке данных:', err);
@@ -274,7 +276,7 @@ newPlaceForm.addEventListener('submit', (event) => {
             const cardElement = createCard(cardData);
 
             const cardsContainer = document.querySelector('.places__list');
-            cardsContainer.append(cardElement);
+            cardsContainer.prepend(cardElement);
             closePopup(newPlaceForm);
         })
 });
@@ -303,6 +305,7 @@ editProfileAvatarForm.addEventListener('submit', (event) => {
             profileImage.src = data.avatar;
 
             closePopup(editProfileAvatarForm);
+            loadUserProfile();
         })
         .finally(() => {
             submitButton.textContent = initialButtonText; // Возвращаем исходный текст кнопки
