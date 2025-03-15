@@ -177,12 +177,15 @@ newPlaceForm.addEventListener('submit', (event) => {
 
     addCard(cardName, cardLink)
         .then((cardData) => {
-            const cardElement = createCard(cardData);
-
+            const cardElement = createCard(cardData, userId);
+            
             const cardsContainer = document.querySelector('.places__list');
             cardsContainer.prepend(cardElement);
             closePopup(newPlaceForm);
         })
+        .finally(() => {
+            submitButton.textContent = initialButtonText; // Возвращаем исходный текст кнопки
+          });
 });
 
 const profileAvatar = document.querySelector('.profile__image');
