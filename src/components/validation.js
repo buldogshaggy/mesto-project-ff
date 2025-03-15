@@ -67,3 +67,24 @@ function toggleButtonState(inputList, buttonElement) {
         buttonElement.classList.remove(formValidationConfig.inactiveButtonClass);
     }
 };
+
+export function clearValidation(formElement, formValidationConfig) {
+    const inputList = formElement.querySelectorAll(formValidationConfig.inputSelector);
+
+    inputList.forEach((inputElement) => {
+        inputElement.classList.remove(formValidationConfig.inputErrorClass);
+
+        const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+
+        if (errorElement) {
+            errorElement.textContent = '';
+            errorElement.classList.remove(formValidationConfig.errorClass);
+        }
+    });
+    
+    const submitButton = formElement.querySelector(formValidationConfig.submitButtonSelector);
+    if (submitButton) {
+        submitButton.classList.add(formValidationConfig.inactiveButtonClass);
+        submitButton.disabled = true;
+    };
+};

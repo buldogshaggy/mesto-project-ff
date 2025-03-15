@@ -1,7 +1,8 @@
 import './pages/index.css';
 import { openPopup, closePopup, handleOverlayClick } from './components/modal.js';
-import { enableValidation } from './components/validation.js';
+import { enableValidation, clearValidation} from './components/validation.js';
 import { loadUserProfile, loadCards, updateProfileData, addCard, deleteCard, removeLike, addLike, updateAvatar} from './components/api.js';
+import { createCard } from './components/card.js';
 
 export const container = document.getElementById('card-container');
 
@@ -36,6 +37,12 @@ export const cardImgUrlInput = newPlaceForm.querySelector('.popup__input_type_ur
 //Куда будем подставлять значения
 const nameElement = document.querySelector('.profile__title');
 const jobElement = document.querySelector('.profile__description');
+
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector('.profile__image-avatar');
+
+let userId = null;
 
 export function handleOpenImg(event) {
     imageSrc.src = event.target.src
@@ -104,108 +111,7 @@ export const formValidationConfig = {
     errorClass: 'popup__error_visible'
   };
 
-enableValidation();
-
-function clearValidation(formElement, formValidationConfig) {
-    const inputList = formElement.querySelectorAll(formValidationConfig.inputSelector);
-
-    inputList.forEach((inputElement) => {
-        inputElement.classList.remove(formValidationConfig.inputErrorClass);
-
-        const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-
-        if (errorElement) {
-            errorElement.textContent = '';
-            errorElement.classList.remove(formValidationConfig.errorClass);
-        }
-    });
-    
-    const submitButton = formElement.querySelector(formValidationConfig.submitButtonSelector);
-    if (submitButton) {
-        submitButton.classList.add(formValidationConfig.inactiveButtonClass);
-        submitButton.disabled = true;
-    };
-};
-
-//Обновляем данные профиля
-function updateProfile(userData) {
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-    const profileImage = document.querySelector('.profile__image-avatar');
-
-    if (profileTitle && profileDescription && profileImage) {
-        profileTitle.textContent = userData.name;
-        profileDescription.textContent = userData.about;
-        profileImage.src = userData.avatar;
-        profileImage.alt = 'Аватар';
-    }
-};
-
-loadUserProfile()
-    .then((userData) => {
-        updateProfile(userData);
-    })
-
-// Создание DOM-элемента карточки
-function createCard(cardData, userId) {
-    const cardTemplate = document.querySelector('#card-template').content;
-    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-
-    const cardImage = cardElement.querySelector('.card__image');
-    const cardTitle = cardElement.querySelector('.card__title');
-    const deleteButton = cardElement.querySelector('.card__delete-button');
-    const likeButton = cardElement.querySelector('.card__like-button');
-    const likeCount = cardElement.querySelector('.card__like_count');
-
-    cardImage.src = cardData.link;
-    cardImage.alt = cardData.name;
-    cardTitle.textContent = cardData.name;
-
-    // Отображаем количество лайков
-    likeCount.textContent = cardData.likes.length;
-
-    // Проверяем, лайкнул ли пользователь карточку
-    const isLiked = cardData.likes.some((like) => like._id === userId);
-    if (isLiked) {
-        likeButton.classList.add('card__like-button_is-active');
-    }
-
-    // Показываем кнопку удаления только для своих карточек
-    if (cardData.owner._id === userId) {
-        deleteButton.style.display = 'block';
-    } else {
-        deleteButton.style.display = 'none';
-    }
-
-    // Обработчик для удаления карточки
-    deleteButton.addEventListener('click', () => {
-        deleteCard(cardData._id)
-            .then(() => {
-                cardElement.remove();
-            })
-    });
-
-    // Обработчик для лайка
-    likeButton.addEventListener('click', () => {
-        const isLiked = likeButton.classList.contains('card__like-button_is-active');
-
-        if (isLiked) {
-            removeLike(cardData._id)
-                .then(updatedCard => {
-                    likeCount.textContent = updatedCard.likes.length;
-                    likeButton.classList.remove('card__like-button_is-active');
-                })
-        } else {
-            addLike(cardData._id)
-                .then(updatedCard => {
-                    likeCount.textContent = updatedCard.likes.length;
-                    likeButton.classList.add('card__like-button_is-active');
-                })
-        }
-    });
-
-    return cardElement;
-};
+enableValidation(formValidationConfig);
 
 // Отображение карточек на странице
 function renderCards(cards, containerSelector, userId) {
@@ -218,18 +124,19 @@ function renderCards(cards, containerSelector, userId) {
 };
 
 // Инициализация загрузки и отображения карточек
-document.addEventListener('DOMContentLoaded', () => {
-    Promise.all([loadUserProfile(), loadCards()])
-        .then(([userData, cards]) => {
+Promise.all([loadUserProfile(), loadCards()])
+    .then(([userData, cards]) => {
+        profileTitle.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        profileImage.src = userData.avatar;
+        userId = userData._id;
+        // Отображаем карточки, передавая _id пользователя
+        renderCards(cards, '.places__list', userData._id);
 
-            // Отображаем карточки, передавая _id пользователя
-            renderCards(cards, '.places__list', userData._id);
-
-        })
-        .catch((err) => {
-            console.error('Ошибка при загрузке данных:', err);
-        });
-});
+    })
+    .catch((err) => {
+        console.error('Ошибка при загрузке данных:', err);
+    });
 
 const editProfileForm = document.querySelector('form[name="edit-profile"]');
 
@@ -248,9 +155,6 @@ editProfileForm.addEventListener('submit', (event) => {
             updateProfileOnPage(userData);
             closePopup(editProfileForm);
         })
-        // .catch((err) => {
-        //     console.error('Ошибка при обновлении профиля:', err);
-        // });
 });
 
 function updateProfileOnPage(userData) {

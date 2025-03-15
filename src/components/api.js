@@ -7,18 +7,20 @@ const config = {
     }
 };
 
+function checkResponse(res) {
+    if (!res.ok) {
+        return Promise.reject(`Ошибка: ${res.status}`);
+    }
+    return res.json();
+};
+
 //Загрузка данных профиля с сервера
 export function loadUserProfile() {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'GET',
         headers: config.headers
     })
-    .then((res) => {
-        return res.json();
-    })
-    .catch((err) => {
-        console.log(err);
-      });   
+    .then(checkResponse);  
 };
 
 export function loadCards() {
@@ -26,15 +28,7 @@ export function loadCards() {
         method: 'GET',
         headers: config.headers
     })
-    .then((res) => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function updateProfileData(name, about) {
@@ -46,12 +40,7 @@ export function updateProfileData(name, about) {
             about: about
         })
     })
-    .then((res) => {
-        return res.json();
-    })
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function addCard(name, link) {
@@ -63,10 +52,7 @@ export function addCard(name, link) {
             link: link
         })
     })
-    .then(res => res.json())
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function deleteCard(cardId) {
@@ -74,12 +60,7 @@ export function deleteCard(cardId) {
         method: 'DELETE',
         headers: config.headers
     })
-    .then(res => {
-        return res.json();
-    })
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function removeLike(cardId) {
@@ -87,10 +68,7 @@ export function removeLike(cardId) {
     method: 'DELETE',
     headers: config.headers
     })
-    .then(res => res.json())
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function addLike(cardId) {
@@ -98,10 +76,7 @@ export function addLike(cardId) {
         method: 'PUT',
         headers: config.headers
     })
-    .then(res => res.json())
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
 
 export function updateAvatar(avatarUrl) {
@@ -112,8 +87,5 @@ export function updateAvatar(avatarUrl) {
         avatar: avatarUrl,
       })
     })
-    .then(res => res.json())
-    .catch((err) => {
-        console.log(err);
-      });
+    .then(checkResponse)
 };
