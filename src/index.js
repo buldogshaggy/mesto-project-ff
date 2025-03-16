@@ -1,7 +1,7 @@
 import './pages/index.css';
 import { openPopup, closePopup, handleOverlayClick } from './components/modal.js';
 import { enableValidation, clearValidation} from './components/validation.js';
-import { loadUserProfile, loadCards, updateProfileData, addCard, deleteCard, removeLike, addLike, updateAvatar} from './components/api.js';
+import { loadUserProfile, loadCards, updateProfileData, addCard, updateAvatar} from './components/api.js';
 import { createCard } from './components/card.js';
 
 export const container = document.getElementById('card-container');
@@ -19,14 +19,14 @@ export const popups = document.querySelectorAll('.popup');
 const editProfileBtn = document.querySelector('.profile__edit-button');
 export const editProfilePopup = document.querySelector('.popup_type_edit');
 
-const closeBtn = document.querySelectorAll('.popup__close');
+const closeButtons = document.querySelectorAll('.popup__close');
 
 //Форма редактирования профиля
-const formElement = document.querySelector('.popup__form');
+const editProfileForm = document.querySelector('form[name="edit-profile"]');
 
 // Находим поля формы в DOM
-export const nameInput = formElement.querySelector('.popup__input_type_name');
-export const jobInput = formElement.querySelector('.popup__input_type_description');
+export const nameInput = editProfileForm.querySelector('.popup__input_type_name');
+export const jobInput = editProfileForm.querySelector('.popup__input_type_description');
 
 export const newPlaceForm = document.querySelector('.popup_type_new-card');
 const newPlaceBtn = document.querySelector('.profile__add-button');
@@ -51,24 +51,8 @@ export function handleOpenImg(event) {
     openPopup(cardImagePopup)
 };
 
-//Отправка формы и закрытие попапа
-function handleProfileFormSubmit(evt) {
-    evt.preventDefault(evt);
-
-//Получили значения полей
-    const nameValue = nameInput.value;
-    const jobValue = jobInput.value;
-
-//Вставили новые значения
-    nameElement.textContent = nameValue;
-    jobElement.textContent = jobValue;
-
-//Закрыли попап
-    closePopup(editProfilePopup);
-};
-
 //Обработчик клика по крестику
-closeBtn.forEach(button => {
+closeButtons.forEach(button => {
     button.addEventListener('click', () => {
         const popup = button.closest('.popup');
         closePopup(popup);
@@ -77,16 +61,16 @@ closeBtn.forEach(button => {
 
 //Обработчик клика по кнопке с карандашом
 editProfileBtn.addEventListener('click', () => {
+    nameInput.value = nameElement.textContent;
+    jobInput.value = jobElement.textContent;
     openPopup(editProfilePopup);
-    clearValidation(formElement, formValidationConfig);
+    clearValidation(editProfileForm, formValidationConfig);
 });
 
 //поставили счетчик клика 
 popups.forEach(popup => {
     popup.addEventListener('click', handleOverlayClick);
 });
-
-formElement.addEventListener('submit', handleProfileFormSubmit);
 
 //Открываем форму Новое место
 newPlaceBtn.addEventListener('click', () => {
@@ -138,37 +122,40 @@ Promise.all([loadUserProfile(), loadCards()])
         console.error('Ошибка при загрузке данных:', err);
     });
 
-const editProfileForm = document.querySelector('form[name="edit-profile"]');
-
 editProfileForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const nameInput = editProfileForm.querySelector('#name-input');
-    const aboutInput = editProfileForm.querySelector('#description-input');
-
+    console.log(editProfileForm);
     const name = nameInput.value;
-    const about = aboutInput.value;
+    const about = jobInput.value;
+
+    const submitButton = editProfileForm.querySelector('.popup__button');
+    const initialButtonText = submitButton.textContent;
+    submitButton.textContent = 'Сохранение...';
 
     updateProfileData(name, about)
         .then((userData) => {
             console.log('Данные профиля обновлены:', userData);
             updateProfileOnPage(userData);
-            closePopup(editProfileForm);
+            closePopup(editProfilePopup);
         })
+        .catch((err) => {
+            console.error('Ошибка при загрузке данных:', err);
+        })
+        .finally(() => {
+            submitButton.textContent = initialButtonText; // Возвращаем исходный текст кнопки
+        });
 });
 
 function updateProfileOnPage(userData) {
-    const profileName = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-
-    profileName.textContent = userData.name;
+    profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
 };
 
 newPlaceForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const submitButton = editProfileAvatarForm.querySelector('.popup__button');
+    const submitButton = newPlaceForm.querySelector('.popup__button');
     const initialButtonText = submitButton.textContent;
     submitButton.textContent = 'Сохранение...';
 
@@ -182,6 +169,9 @@ newPlaceForm.addEventListener('submit', (event) => {
             const cardsContainer = document.querySelector('.places__list');
             cardsContainer.prepend(cardElement);
             closePopup(newPlaceForm);
+        })
+        .catch((err) => {
+            console.error('Ошибка при загрузке данных:', err);
         })
         .finally(() => {
             submitButton.textContent = initialButtonText; // Возвращаем исходный текст кнопки
@@ -213,6 +203,9 @@ editProfileAvatarForm.addEventListener('submit', (event) => {
 
             closePopup(editProfileAvatarForm);
             loadUserProfile();
+        })
+        .catch((err) => {
+            console.error('Ошибка при загрузке данных:', err);
         })
         .finally(() => {
             submitButton.textContent = initialButtonText; // Возвращаем исходный текст кнопки

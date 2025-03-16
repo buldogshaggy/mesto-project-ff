@@ -40,6 +40,9 @@ export function createCard(cardData, userId) {
             .then(() => {
                 cardElement.remove();
             })
+            .catch((err) => {
+                console.error('Ошибка при загрузке данных:', err);
+            });
     });
     // Обработчик для лайка
     likeButton.addEventListener('click', () => {
@@ -51,12 +54,18 @@ export function createCard(cardData, userId) {
                     likeCount.textContent = updatedCard.likes.length;
                     likeButton.classList.remove('card__like-button_is-active');
                 })
+                .catch((err) => {
+                    console.error('Ошибка при загрузке данных:', err);
+                });
         } else {
             addLike(cardData._id)
                 .then(updatedCard => {
                     likeCount.textContent = updatedCard.likes.length;
                     likeButton.classList.add('card__like-button_is-active');
                 })
+                .catch((err) => {
+                    console.error('Ошибка при загрузке данных:', err);
+                });
         }
     });
 

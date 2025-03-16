@@ -19,6 +19,6 @@ function closeByEscape(evt) {
 
 export function handleOverlayClick(e) {
     if (e.target.classList.contains('popup')) {
-        e.currentTarget.classList.remove('popup_is-opened');
+        closePopup(e.target);
     };
 };
